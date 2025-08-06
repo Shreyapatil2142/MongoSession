@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import DocumentUpload from './components/DocumentUpload';
 import QueryForm from './components/QueryForm';
 import ResultDisplay from './components/ResultDisplay';
-import './styles.css';
+import './index.css';
 
 function App() {
   const [uploadedFiles, setUploadedFiles] = useState([]);

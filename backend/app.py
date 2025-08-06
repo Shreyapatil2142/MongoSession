@@ -6,6 +6,10 @@ from utils.document_processor import process_document
 from utils.vector_db import VectorDB
 import json
 from datetime import datetime
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
