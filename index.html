@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MongoDB CRUD Demo</title>
+  <style>
+    /* Background Gradient */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #3b82f6, #6366f1, #818cf8);
+      min-height: 100vh;
+      padding: 30px;
+      color: #2c3e50;
+    }
+    
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #ffffff;
+      font-size: 2.2rem;
+      letter-spacing: 1px;
+    }
+
+    /* Form Styling */
+    form {
+      background: #ffffffcc;
+      backdrop-filter: blur(6px);
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 500px;
+      margin: 0 auto 40px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    form input {
+      width: calc(100% - 20px);
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #a4ccd9;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s ease-in-out;
+    }
+
+    form input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 6px rgba(72, 179, 175, 0.4);
+    }
+
+    form button {
+      background: #4686ee;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+
+    form button:hover {
+      background: #6366f1;
+    }
+
+    /* Students List */
+    #students {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .student {
+      background: #ffffffdd;
+      padding: 15px 20px;
+      margin: 12px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .student b {
+      color: #3b82f6;
+    }
+
+    .student button {
+      background: transparent;
+      border: 1px solid #3b82f6;
+      color: #3b82f6;
+      padding: 6px 12px;
+      border-radius: 6px;
+      margin-left: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .student button:hover {
+      background: #6366f1;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>MongoDB CRUD Operations</h1>
+
+  <form id="studentForm">
+    <input type="text" id="name" placeholder="Enter Name" required>
+    <input type="email" id="email" placeholder="Enter Email" required>
+    <input type="number" id="age" placeholder="Enter Age" required>
+    <button type="submit">➕ Add Student</button>
+  </form>
+
+  <div id="students"></div>
+
+  <script>
+    const api = "http://localhost:3000/students";
+
+    async function loadStudents() {
+      const res = await fetch(api);
+      const data = await res.json();
+      const div = document.getElementById("students");
+      div.innerHTML = "";
+      data.forEach(s => {
+        div.innerHTML += `
+          <div class="student">
+            <span><b>${s.name}</b> (${s.age}) - ${s.email}</span>
+            <span>
+              <button onclick="updateStudent('${s._id}')">✏️ Update</button>
+              <button onclick="deleteStudent('${s._id}')">🗑️ Delete</button>
+            </span>
+          </div>`;
+      });
+    }
+
+    document.getElementById("studentForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const age = document.getElementById("age").value;
+
+      await fetch(api, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, age })
+      });
+      e.target.reset();
+      loadStudents();
+    });
+
+    async function deleteStudent(id) {
+      await fetch(`${api}/${id}`, { method: "DELETE" });
+      loadStudents();
+    }
+
+    async function updateStudent(id) {
+      const name = prompt("Enter new name:");
+      const email = prompt("Enter new email:");
+      const age = prompt("Enter new age:");
+      if (name && email && age) {
+        await fetch(`${api}/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, age })
+        });
+        loadStudents();
+      }
+    }
+
+    loadStudents();
+  </script>
+</body>
+</html>
